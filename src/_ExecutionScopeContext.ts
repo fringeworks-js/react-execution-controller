@@ -1,0 +1,47 @@
+'use client';
+
+import { createContext } from 'react';
+import type { AnyExecutionController } from './types';
+
+/**
+ * `ExecutionScope`が提供する値
+ */
+export type ExecutionScopeContextValue = {
+  /**
+   * このスコープのコントローラー
+   */
+  controller: AnyExecutionController;
+
+  /**
+   * 親のスコープ
+   */
+  parent: ExecutionScopeContextValue | null;
+};
+
+/**
+ * `ExecutionScope`のコンテキスト
+ */
+const ExecutionScopeContext = createContext<ExecutionScopeContextValue | null>(
+  null,
+);
+ExecutionScopeContext.displayName = 'ExecutionScopeContext';
+export default ExecutionScopeContext;
+
+/**
+ * スコープを遡ってコントローラーを探す
+ *
+ * @param scope 起点のスコープ
+ * @param id コントローラーのID。未指定の場合は起点のスコープのコントローラー
+ * @returns
+ */
+export function findController(
+  scope: ExecutionScopeContextValue | null,
+  id?: string,
+): AnyExecutionController | undefined {
+  for (let current = scope; current; current = current.parent) {
+    if (id == null || current.controller.id === id) {
+      return current.controller;
+    }
+  }
+  return undefined;
+}
