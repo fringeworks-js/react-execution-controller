@@ -3,7 +3,7 @@
 import { useContext } from 'react';
 import ExecutionScopeContext, {
   findController,
-} from '../_ExecutionScopeContext';
+} from '../_internal/_ExecutionScopeContext';
 import type { AnyExecutionController } from '../types';
 
 /**

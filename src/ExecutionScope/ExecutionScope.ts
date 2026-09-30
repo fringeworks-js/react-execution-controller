@@ -1,7 +1,7 @@
 'use client';
 
 import { createElement, useContext, useMemo } from 'react';
-import ExecutionScopeContext from '../_ExecutionScopeContext';
+import ExecutionScopeContext from '../_internal/_ExecutionScopeContext';
 import type { ExecutionScopeProps } from './types';
 
 /**

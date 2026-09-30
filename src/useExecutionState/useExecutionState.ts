@@ -2,7 +2,7 @@
 
 import type { CancelPolicy } from '@niche-works/execution-controller';
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
-import useTargetController from '../_useTargetController';
+import useTargetController from '../_internal/_useTargetController';
 import type { ExecutionControllerTarget } from '../types';
 import type { ExecutionState } from './types';
 

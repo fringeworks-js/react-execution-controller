@@ -4,8 +4,8 @@ import type { CancelPolicy } from '@niche-works/execution-controller';
 import type {
   AnyExecutionController,
   ExecutionControllerTarget,
-} from './types';
-import useExecutionController from './useExecutionController';
+} from '../types';
+import useExecutionController from '../useExecutionController';
 
 /**
  * hookの引数で指定されたコントローラーを解決する

@@ -6,7 +6,7 @@ import type {
 } from '@niche-works/execution-controller';
 import type { SyncLooseFunction } from '@niche-works/types';
 import { useInsertionEffect, useMemo, useRef } from 'react';
-import useTargetController from '../_useTargetController';
+import useTargetController from '../_internal/_useTargetController';
 import type { ExecutionControllerTarget } from '../types';
 
 /**

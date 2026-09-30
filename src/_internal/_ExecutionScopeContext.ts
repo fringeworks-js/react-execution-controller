@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext } from 'react';
-import type { AnyExecutionController } from './types';
+import type { AnyExecutionController } from '../types';
 
 /**
  * `ExecutionScope`が提供する値
