@@ -16,11 +16,8 @@ import useExecutionController from '../useExecutionController';
 export default function useTargetController<P extends CancelPolicy>(
   controller?: ExecutionControllerTarget<P>,
 ): AnyExecutionController | undefined {
+  const isId = typeof controller === 'string';
   // hookは条件付きで呼べないため、インスタンス指定の場合も呼び出しておく
-  const scoped = useExecutionController(
-    typeof controller === 'string' ? controller : undefined,
-  );
-  return controller != null && typeof controller === 'object'
-    ? controller
-    : scoped;
+  const scoped = useExecutionController(isId ? controller : undefined);
+  return !isId && controller != null ? controller : scoped;
 }

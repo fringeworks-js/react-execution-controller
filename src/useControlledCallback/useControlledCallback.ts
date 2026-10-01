@@ -4,8 +4,9 @@ import type {
   CancelPolicy,
   ControlledFunction,
 } from '@niche-works/execution-controller';
+import useLatestRef from '@niche-works/react-utils/hooks/useLatestRef';
 import type { SyncLooseFunction } from '@niche-works/types';
-import { useInsertionEffect, useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import useTargetController from '../_internal/_useTargetController';
 import type { ExecutionControllerTarget } from '../types';
 
@@ -27,22 +28,25 @@ export default function useControlledCallback<
   const target = useTargetController(controller);
 
   // 最新のfnを保持する
-  const fnRef = useRef(fn);
-  useInsertionEffect(() => {
-    fnRef.current = fn;
-  });
+  const fnRef = useLatestRef(fn);
 
-  return useMemo(() => {
+  const callback = useMemo(() => {
     function latest(this: unknown, ...args: Parameters<F>) {
-      return fnRef.current.apply(this, args);
+      // 最新の関数を実行
+      return fnRef.current?.apply(this, args);
     }
 
     if (target) {
+      // コントローラーあり
       return target.wrap(latest) as ControlledFunction<F, P>;
+    } else {
+      // コントローラーなし
+      // 戻り値の型を揃えるため非同期で実行する関数を返す
+      return async function (this: unknown, ...args: Parameters<F>) {
+        return latest.apply(this, args);
+      } as ControlledFunction<F, P>;
     }
-    // コントローラーが無い場合も戻り値の型を揃えるため非同期にする
-    return async function (this: unknown, ...args: Parameters<F>) {
-      return latest.apply(this, args);
-    } as ControlledFunction<F, P>;
   }, [target]);
+
+  return callback;
 }

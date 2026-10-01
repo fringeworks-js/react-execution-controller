@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import useConstant from '@niche-works/react-utils/hooks/useConstant';
+import { useEffect } from 'react';
 import type { AnyExecutionController } from '../types';
 
 /**
@@ -15,7 +16,7 @@ import type { AnyExecutionController } from '../types';
 export default function useLocalExecutionController<
   C extends AnyExecutionController,
 >(factory: () => C): C {
-  const [controller] = useState(factory);
+  const controller = useConstant(factory);
 
   useEffect(() => () => controller.cancel(), [controller]);
 

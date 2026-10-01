@@ -38,8 +38,13 @@ export function findController(
   scope: ExecutionScopeContextValue | null,
   id?: string,
 ): AnyExecutionController | undefined {
+  if (id == null) {
+    // idの指定が無い場合は直近のもの
+    return scope?.controller;
+  }
   for (let current = scope; current; current = current.parent) {
-    if (id == null || current.controller.id === id) {
+    if (current.controller.id === id) {
+      // 遡って最初に見つけたIDが一致するもの
       return current.controller;
     }
   }

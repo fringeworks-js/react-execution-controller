@@ -1,6 +1,6 @@
 'use client';
 
-import { createElement, useContext, useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import ExecutionScopeContext from '../_internal/_ExecutionScopeContext';
 import type { ExecutionScopeProps } from './types';
 
@@ -15,6 +15,9 @@ export default function ExecutionScope(props: ExecutionScopeProps) {
   const parent = useContext(ExecutionScopeContext);
   const value = useMemo(() => ({ controller, parent }), [controller, parent]);
 
-  // 利用側のJSXの設定に依存しないようcreateElementを使用する
-  return createElement(ExecutionScopeContext.Provider, { value }, children);
+  return (
+    <ExecutionScopeContext.Provider value={value}>
+      {children}
+    </ExecutionScopeContext.Provider>
+  );
 }

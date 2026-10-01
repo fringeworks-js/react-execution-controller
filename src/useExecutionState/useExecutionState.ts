@@ -28,10 +28,13 @@ export default function useExecutionState<P extends CancelPolicy>(
     [target],
   );
   const getSnapshot = () => (target ? target.executing : 0);
+  // subscribe関数に渡されたlistenerが実行されたら描画を更新
   const executing = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
-  return useMemo(
+  const state = useMemo(
     () => ({ executing, isExecuting: executing > 0 }),
     [executing],
   );
+
+  return state;
 }
