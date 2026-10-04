@@ -1,4 +1,4 @@
-import { CANCEL, DebounceController } from '@niche-works/execution-controller';
+import { CANCEL, DebounceController } from '@fringeworks/execution-controller';
 import { renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import useLocalExecutionController from './useLocalExecutionController';

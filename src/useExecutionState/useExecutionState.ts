@@ -1,6 +1,6 @@
 'use client';
 
-import type { CancelPolicy } from '@niche-works/execution-controller';
+import type { CancelPolicy } from '@fringeworks/execution-controller';
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
 import useTargetController from '../_internal/_useTargetController';
 import type { ExecutionControllerTarget } from '../types';

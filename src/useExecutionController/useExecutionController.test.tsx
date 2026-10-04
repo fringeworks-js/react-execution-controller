@@ -1,7 +1,7 @@
 import {
   ExclusiveController,
   ParallelController,
-} from '@niche-works/execution-controller';
+} from '@fringeworks/execution-controller';
 import { renderHook } from '@testing-library/react';
 import type { PropsWithChildren } from 'react';
 import { describe, expect, it } from 'vitest';

@@ -1,6 +1,6 @@
 'use client';
 
-import type { CancelPolicy } from '@niche-works/execution-controller';
+import type { CancelPolicy } from '@fringeworks/execution-controller';
 import type {
   AnyExecutionController,
   ExecutionControllerTarget,

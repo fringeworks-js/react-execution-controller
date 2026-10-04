@@ -1,7 +1,7 @@
 import type {
   CancelPolicy,
   ExecutionController,
-} from '@niche-works/execution-controller';
+} from '@fringeworks/execution-controller';
 
 /**
  * 種別・キャンセル時の動作を問わない実行コントローラー

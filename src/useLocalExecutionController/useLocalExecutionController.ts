@@ -1,6 +1,6 @@
 'use client';
 
-import useConstant from '@niche-works/react-utils/hooks/useConstant';
+import useConstant from '@fringeworks/react-utils/hooks/useConstant';
 import { useEffect } from 'react';
 import type { AnyExecutionController } from '../types';
 

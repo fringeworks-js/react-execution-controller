@@ -1,6 +1,6 @@
-# @niche-works/react-execution-controller
+# @fringeworks/react-execution-controller
 
-`@niche-works/react-execution-controller` は [`@niche-works/execution-controller`](https://www.npmjs.com/package/@niche-works/execution-controller) を React の画面内で共有して利用するためのニッチなライブラリです。\
+`@fringeworks/react-execution-controller` は [`@fringeworks/execution-controller`](https://www.npmjs.com/package/@fringeworks/execution-controller) を React の画面内で共有して利用するためのニッチなライブラリです。\
 ボタンの連打防止、実行中の他の操作の破棄、非同期処理の並列数の制限などを、コンポーネントをまたいで実現できます。
 
 **[English README is available here](./README.md)**
@@ -8,9 +8,9 @@
 ## インストール
 
 ```bash
-npm install @niche-works/react-execution-controller @niche-works/execution-controller
+npm install @fringeworks/react-execution-controller @fringeworks/execution-controller
 # または
-pnpm add @niche-works/react-execution-controller @niche-works/execution-controller
+pnpm add @fringeworks/react-execution-controller @fringeworks/execution-controller
 ```
 
 ## 使い方
@@ -20,12 +20,12 @@ pnpm add @niche-works/react-execution-controller @niche-works/execution-controll
 `ExecutionScope` で共有する範囲を決め、その中の hook からコントローラーを利用します。
 
 ```tsx
-import { ExclusiveController } from '@niche-works/execution-controller';
+import { ExclusiveController } from '@fringeworks/execution-controller';
 import {
   ExecutionScope,
   useControlledCallback,
   useExecutionState,
-} from '@niche-works/react-execution-controller';
+} from '@fringeworks/react-execution-controller';
 
 // 保存・削除のどちらかを実行している間は、他の操作を破棄する
 const controller = new ExclusiveController({ id: 'form' });
@@ -58,11 +58,11 @@ function SaveButton() {
 共有する必要がない場合は、`useLocalExecutionController` でコンポーネント専用のコントローラーを作成し、hook に渡します。
 
 ```tsx
-import { ExclusiveController } from '@niche-works/execution-controller';
+import { ExclusiveController } from '@fringeworks/execution-controller';
 import {
   useControlledCallback,
   useLocalExecutionController,
-} from '@niche-works/react-execution-controller';
+} from '@fringeworks/react-execution-controller';
 
 function SubmitButton() {
   // 実行中の連打を防止する
@@ -99,11 +99,11 @@ function Uploader() {
 
 hook の `controller` 引数には、以下のいずれかを指定できます。
 
-| 指定           | 使用するコントローラー                                              |
-| -------------- | ------------------------------------------------------------------- |
-| 未指定         | 最寄りの `ExecutionScope` のコントローラー                          |
-| 文字列         | `ExecutionScope` を遡って最初に見つかった、ID が一致するコントローラー |
-| インスタンス   | 指定されたコントローラー                                            |
+| 指定         | 使用するコントローラー                                                 |
+| ------------ | ---------------------------------------------------------------------- |
+| 未指定       | 最寄りの `ExecutionScope` のコントローラー                             |
+| 文字列       | `ExecutionScope` を遡って最初に見つかった、ID が一致するコントローラー |
+| インスタンス | 指定されたコントローラー                                               |
 
 コントローラーが見つからない場合もエラーにはならず、制御なしで動作します（テストや Storybook で `ExecutionScope` を用意しなくても使えます）。
 
@@ -111,8 +111,8 @@ hook の `controller` 引数には、以下のいずれかを指定できます�
 
 子孫のコンポーネントでコントローラーを共有するコンポーネントです。
 
-| プロパティ   | 型                    | 説明                           |
-| ------------ | --------------------- | ------------------------------ |
+| プロパティ   | 型                    | 説明                               |
+| ------------ | --------------------- | ---------------------------------- |
 | `controller` | `ExecutionController` | スコープ内で共有するコントローラー |
 
 ### useControlledCallback

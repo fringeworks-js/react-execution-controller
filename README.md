@@ -1,6 +1,6 @@
-# @niche-works/react-execution-controller
+# @fringeworks/react-execution-controller
 
-`@niche-works/react-execution-controller` is a niche library for sharing [`@niche-works/execution-controller`](https://www.npmjs.com/package/@niche-works/execution-controller) across React components.\
+`@fringeworks/react-execution-controller` is a niche library for sharing [`@fringeworks/execution-controller`](https://www.npmjs.com/package/@fringeworks/execution-controller) across React components.\
 It lets you prevent repeated clicks, discard other operations while one is running, and limit the concurrency of async tasks — across components.
 
 **[日本語のREADMEはこちら](./README.ja.md)**
@@ -8,9 +8,9 @@ It lets you prevent repeated clicks, discard other operations while one is runni
 ## Installation
 
 ```bash
-npm install @niche-works/react-execution-controller @niche-works/execution-controller
+npm install @fringeworks/react-execution-controller @fringeworks/execution-controller
 # or
-pnpm add @niche-works/react-execution-controller @niche-works/execution-controller
+pnpm add @fringeworks/react-execution-controller @fringeworks/execution-controller
 ```
 
 ## Usage
@@ -20,12 +20,12 @@ pnpm add @niche-works/react-execution-controller @niche-works/execution-controll
 Define the sharing range with `ExecutionScope`, then use the controller from hooks inside it.
 
 ```tsx
-import { ExclusiveController } from '@niche-works/execution-controller';
+import { ExclusiveController } from '@fringeworks/execution-controller';
 import {
   ExecutionScope,
   useControlledCallback,
   useExecutionState,
-} from '@niche-works/react-execution-controller';
+} from '@fringeworks/react-execution-controller';
 
 // While either save or delete is running, other operations are discarded
 const controller = new ExclusiveController({ id: 'form' });
@@ -58,11 +58,11 @@ function SaveButton() {
 When sharing is not needed, create a component-local controller with `useLocalExecutionController` and pass it to the hooks.
 
 ```tsx
-import { ExclusiveController } from '@niche-works/execution-controller';
+import { ExclusiveController } from '@fringeworks/execution-controller';
 import {
   useControlledCallback,
   useLocalExecutionController,
-} from '@niche-works/react-execution-controller';
+} from '@fringeworks/react-execution-controller';
 
 function SubmitButton() {
   // Prevent repeated clicks while running
@@ -99,11 +99,11 @@ function Uploader() {
 
 The `controller` argument of the hooks accepts one of the following.
 
-| Value     | Controller used                                                         |
-| --------- | ----------------------------------------------------------------------- |
-| Omitted   | The controller of the nearest `ExecutionScope`                          |
-| String    | The first controller with a matching ID, walking up the `ExecutionScope`s |
-| Instance  | The given controller                                                    |
+| Value    | Controller used                                                           |
+| -------- | ------------------------------------------------------------------------- |
+| Omitted  | The controller of the nearest `ExecutionScope`                            |
+| String   | The first controller with a matching ID, walking up the `ExecutionScope`s |
+| Instance | The given controller                                                      |
 
 If no controller is found, no error is thrown and the hooks work without control (so they can be used in tests or Storybook without an `ExecutionScope`).
 
@@ -111,8 +111,8 @@ If no controller is found, no error is thrown and the hooks work without control
 
 A component that shares a controller with its descendants.
 
-| Property     | Type                  | Description                           |
-| ------------ | --------------------- | ------------------------------------- |
+| Property     | Type                  | Description                            |
+| ------------ | --------------------- | -------------------------------------- |
 | `controller` | `ExecutionController` | The controller shared within the scope |
 
 ### useControlledCallback

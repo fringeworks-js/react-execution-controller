@@ -3,9 +3,9 @@
 import type {
   CancelPolicy,
   ControlledFunction,
-} from '@niche-works/execution-controller';
-import useLatestRef from '@niche-works/react-utils/hooks/useLatestRef';
-import type { SyncLooseFunction } from '@niche-works/types';
+} from '@fringeworks/execution-controller';
+import useLatestRef from '@fringeworks/react-utils/hooks/useLatestRef';
+import type { SyncLooseFunction } from '@fringeworks/types';
 import { useMemo } from 'react';
 import useTargetController from '../_internal/_useTargetController';
 import type { ExecutionControllerTarget } from '../types';
