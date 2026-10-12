@@ -1,6 +1,6 @@
 # @fringeworks/react-execution-controller
 
-`@fringeworks/react-execution-controller` は [`@fringeworks/execution-controller`](https://www.npmjs.com/package/@fringeworks/execution-controller) を React の画面内で共有して利用するためのニッチなライブラリです。\
+`@fringeworks/react-execution-controller` は [`@fringeworks/execution-controller`](https://www.npmjs.com/package/@fringeworks/execution-controller) を React の画面内で共有して利用するための、誰かにとっては便利なライブラリです。\
 ボタンの連打防止、実行中の他の操作の破棄、非同期処理の並列数の制限などを、コンポーネントをまたいで実現できます。
 
 **[English README is available here](./README.md)**

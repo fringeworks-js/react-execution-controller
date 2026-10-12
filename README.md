@@ -1,6 +1,6 @@
 # @fringeworks/react-execution-controller
 
-`@fringeworks/react-execution-controller` is a niche library for sharing [`@fringeworks/execution-controller`](https://www.npmjs.com/package/@fringeworks/execution-controller) across React components.\
+`@fringeworks/react-execution-controller` is a library some will find handy, for sharing [`@fringeworks/execution-controller`](https://www.npmjs.com/package/@fringeworks/execution-controller) across React components.\
 It lets you prevent repeated clicks, discard other operations while one is running, and limit the concurrency of async tasks — across components.
 
 **[日本語のREADMEはこちら](./README.ja.md)**
