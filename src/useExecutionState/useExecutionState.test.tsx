@@ -32,13 +32,13 @@ describe('useExecutionState', () => {
     expect(result.current).toEqual({ executing: 2, isExecuting: true });
 
     await act(async () => {
-      resolves[0]();
+      resolves[0]!();
       await p1;
     });
     expect(result.current).toEqual({ executing: 1, isExecuting: true });
 
     await act(async () => {
-      resolves[1]();
+      resolves[1]!();
       await p2;
     });
     expect(result.current).toEqual({ executing: 0, isExecuting: false });
