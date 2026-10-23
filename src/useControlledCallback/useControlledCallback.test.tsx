@@ -5,7 +5,7 @@ import {
 } from '@fringeworks/execution-controller';
 import { renderHook } from '@testing-library/react';
 import type { PropsWithChildren } from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import ExecutionScope from '../ExecutionScope';
 import useControlledCallback from './useControlledCallback';
 
@@ -147,5 +147,66 @@ describe('useControlledCallback', () => {
 
     rerender({ controller: b });
     expect(result.current).not.toBe(first);
+  });
+
+  it('呼び出し時のthisを引き継ぐ', async () => {
+    const controller = new ExclusiveController({ id: 'test' });
+    const { result } = renderHook(() =>
+      useControlledCallback(function (this: { value: number }) {
+        return this.value;
+      }, controller),
+    );
+    const target = { value: 1, fn: result.current };
+
+    expect(await target.fn()).toBe(1);
+  });
+
+  it('コントローラーが無い場合、例外はrejectとして返す', async () => {
+    const error = new Error('sync');
+    const { result } = renderHook(() =>
+      useControlledCallback(() => {
+        throw error;
+      }),
+    );
+
+    await expect(result.current()).rejects.toBe(error);
+  });
+
+  it('コントローラーが無い場合、rejectはそのまま返す', async () => {
+    const error = new Error('async');
+    const { result } = renderHook(() =>
+      useControlledCallback(() => Promise.reject(error)),
+    );
+
+    await expect(result.current()).rejects.toBe(error);
+  });
+
+  it('戻り値の型にCANCELを含むかは、コントローラーの指定で決まる', () => {
+    const resolve = new ExclusiveController({
+      id: 'resolve',
+      cancelPolicy: 'resolve',
+    });
+    const ignore = new ExclusiveController({ id: 'ignore' });
+    const fn = () => 'done';
+    const { result } = renderHook(() => ({
+      scoped: useControlledCallback(fn),
+      id: useControlledCallback(fn, 'resolve'),
+      resolve: useControlledCallback(fn, resolve),
+      ignore: useControlledCallback(fn, ignore),
+    }));
+
+    // 型の上でcancelPolicyが分からない場合は、CANCELを含む
+    expectTypeOf(result.current.scoped).returns.resolves.toEqualTypeOf<
+      string | typeof CANCEL
+    >();
+    expectTypeOf(result.current.id).returns.resolves.toEqualTypeOf<
+      string | typeof CANCEL
+    >();
+    expectTypeOf(result.current.resolve).returns.resolves.toEqualTypeOf<
+      string | typeof CANCEL
+    >();
+    expectTypeOf(
+      result.current.ignore,
+    ).returns.resolves.toEqualTypeOf<string>();
   });
 });

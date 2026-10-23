@@ -17,13 +17,16 @@ import type { ExecutionControllerTarget } from '../types';
  * 呼び出し時には常に最新の`fn`が実行される。
  * コントローラーが見つからない場合は、制御せずに`fn`を実行する関数を返す。
  *
+ * 戻り値の型は、インスタンスを指定した場合はその`cancelPolicy`から決まる。
+ * 未指定・IDの場合は型の上でコントローラーが分からないため、`CANCEL`を含む型になる。
+ *
  * @param fn 対象の関数
  * @param controller コントローラーの指定。未指定の場合は最寄りの`ExecutionScope`のコントローラー
  * @returns 制御された関数
  */
 export default function useControlledCallback<
   F extends SyncLooseFunction,
-  P extends CancelPolicy = 'ignore',
+  P extends CancelPolicy = CancelPolicy,
 >(fn: F, controller?: ExecutionControllerTarget<P>): ControlledFunction<F, P> {
   const target = useTargetController(controller);
 
@@ -33,7 +36,7 @@ export default function useControlledCallback<
   const callback = useMemo(() => {
     function latest(this: unknown, ...args: Parameters<F>) {
       // 最新の関数を実行
-      return fnRef.current?.apply(this, args);
+      return fnRef.current.apply(this, args);
     }
 
     if (target) {
@@ -46,7 +49,7 @@ export default function useControlledCallback<
         return latest.apply(this, args);
       } as ControlledFunction<F, P>;
     }
-  }, [target]);
+  }, [target, fnRef]);
 
   return callback;
 }

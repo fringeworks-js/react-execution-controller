@@ -32,7 +32,7 @@ export default ExecutionScopeContext;
  *
  * @param scope 起点のスコープ
  * @param id コントローラーのID。未指定の場合は起点のスコープのコントローラー
- * @returns
+ * @returns コントローラー。見つからない場合は`undefined`
  */
 export function findController(
   scope: ExecutionScopeContextValue | null,

@@ -1,4 +1,7 @@
-import { ParallelController } from '@fringeworks/execution-controller';
+import {
+  ExclusiveController,
+  ParallelController,
+} from '@fringeworks/execution-controller';
 import { act, renderHook } from '@testing-library/react';
 import type { PropsWithChildren } from 'react';
 import { describe, expect, it } from 'vitest';
@@ -63,5 +66,51 @@ describe('useExecutionState', () => {
 
     rerender();
     expect(result.current).toBe(first);
+  });
+
+  it('IDを指定したコントローラーの状態を返す', () => {
+    const outer = new ParallelController({ id: 'outer' });
+    const inner = new ExclusiveController({ id: 'inner' });
+    const wrapper = ({ children }: PropsWithChildren) => (
+      <ExecutionScope controller={outer}>
+        <ExecutionScope controller={inner}>{children}</ExecutionScope>
+      </ExecutionScope>
+    );
+    const { result } = renderHook(() => useExecutionState('outer'), {
+      wrapper,
+    });
+
+    act(() => {
+      outer.wrap(() => new Promise<void>(() => {}))();
+    });
+    expect(result.current.isExecuting).toBe(true);
+  });
+
+  it('コントローラーが変わった場合は、新しいコントローラーを購読する', () => {
+    const a = new ParallelController({ id: 'a' });
+    const b = new ParallelController({ id: 'b' });
+    const { result, rerender } = renderHook(
+      ({ controller }) => useExecutionState(controller),
+      { initialProps: { controller: a } },
+    );
+
+    act(() => {
+      a.wrap(() => new Promise<void>(() => {}))();
+    });
+    expect(result.current.executing).toBe(1);
+
+    rerender({ controller: b });
+    expect(result.current.executing).toBe(0);
+
+    // 古いコントローラーの変化には追従しない
+    act(() => {
+      a.wrap(() => new Promise<void>(() => {}))();
+    });
+    expect(result.current.executing).toBe(0);
+
+    act(() => {
+      b.wrap(() => new Promise<void>(() => {}))();
+    });
+    expect(result.current.executing).toBe(1);
   });
 });

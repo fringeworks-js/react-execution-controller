@@ -1,4 +1,2 @@
-'use client';
-
-export { default } from './ExecutionScope';
+export { default as ExecutionScope, default } from './ExecutionScope';
 export type * from './types';

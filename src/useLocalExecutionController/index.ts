@@ -1,3 +1,4 @@
-'use client';
-
-export { default } from './useLocalExecutionController';
+export {
+  default,
+  default as useLocalExecutionController,
+} from './useLocalExecutionController';

@@ -1,6 +1,5 @@
 'use client';
 
-import type { CancelPolicy } from '@fringeworks/execution-controller';
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
 import useTargetController from '../_internal/_useTargetController';
 import type { ExecutionControllerTarget } from '../types';
@@ -17,8 +16,8 @@ const unsubscribe = () => {};
  * @param controller コントローラーの指定。未指定の場合は最寄りの`ExecutionScope`のコントローラー
  * @returns 実行状態
  */
-export default function useExecutionState<P extends CancelPolicy>(
-  controller?: ExecutionControllerTarget<P>,
+export default function useExecutionState(
+  controller?: ExecutionControllerTarget,
 ): ExecutionState {
   const target = useTargetController(controller);
 

@@ -1,3 +1,4 @@
-'use client';
-
-export { default } from './useExecutionController';
+export {
+  default,
+  default as useExecutionController,
+} from './useExecutionController';

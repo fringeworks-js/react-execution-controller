@@ -25,12 +25,15 @@ import {
   ExecutionScope,
   useControlledCallback,
   useExecutionState,
+  useLocalExecutionController,
 } from '@fringeworks/react-execution-controller';
 
-// 保存・削除のどちらかを実行している間は、他の操作を破棄する
-const controller = new ExclusiveController({ id: 'form' });
-
 function Form() {
+  // 保存・削除のどちらかを実行している間は、他の操作を破棄する
+  const controller = useLocalExecutionController(
+    () => new ExclusiveController({ id: 'form' }),
+  );
+
   return (
     <ExecutionScope controller={controller}>
       <SaveButton />
@@ -55,7 +58,7 @@ function SaveButton() {
 
 ### コンポーネント内だけで使う
 
-共有する必要がない場合は、`useLocalExecutionController` でコンポーネント専用のコントローラーを作成し、hook に渡します。
+共有する必要がない場合は、`useLocalExecutionController` で作成したコントローラーを hook に直接渡します。
 
 ```tsx
 import { ExclusiveController } from '@fringeworks/execution-controller';
@@ -80,11 +83,22 @@ function SubmitButton() {
 `ExecutionScope` は入れ子にできます。hook は ID を省略すると最寄りのスコープのコントローラーを、ID を指定するとスコープを遡って ID が一致するコントローラーを使用します。
 
 ```tsx
-<ExecutionScope controller={new ParallelController({ id: 'upload', limit: 3 })}>
-  <ExecutionScope controller={new ExclusiveController({ id: 'form' })}>
-    <Uploader />
-  </ExecutionScope>
-</ExecutionScope>;
+function UploadForm() {
+  const upload = useLocalExecutionController(
+    () => new ParallelController({ id: 'upload', limit: 3 }),
+  );
+  const form = useLocalExecutionController(
+    () => new ExclusiveController({ id: 'form' }),
+  );
+
+  return (
+    <ExecutionScope controller={upload}>
+      <ExecutionScope controller={form}>
+        <Uploader />
+      </ExecutionScope>
+    </ExecutionScope>
+  );
+}
 
 function Uploader() {
   // 'form' の外側にある 'upload' で並列数を制限する
@@ -93,7 +107,26 @@ function Uploader() {
 }
 ```
 
+### コントローラーを作成する場所
+
+`ExecutionScope` の `controller` や hook の `controller` 引数にインスタンスを渡す場合は、レンダリングのたびに `new` しないでください。インスタンスが作り直されると、連打防止などの状態がリセットされ、`useControlledCallback` が返す関数も作り直されます。
+
+| 作成する場所                               | 共有される範囲                                                     |
+| ------------------------------------------ | ------------------------------------------------------------------ |
+| `useLocalExecutionController` の `factory` | そのコンポーネントのインスタンス                                   |
+| モジュールのトップレベル                   | アプリ全体。SSR ではリクエストをまたいで同じインスタンスが使われる |
+
+アンマウント時に実行を待機している呼び出しをキャンセルするのは、`useLocalExecutionController` で作成したコントローラーだけです。モジュールのトップレベルで作成したコントローラーでは、呼び出し元のコンポーネントがアンマウントされても、待機している呼び出し（デバウンス待ちなど）は実行されます。
+
 ## API
+
+| API                                      | 説明                                                   |
+| ---------------------------------------- | ------------------------------------------------------ |
+| `ExecutionScope`                         | 子孫のコンポーネントでコントローラーを共有する         |
+| `useControlledCallback(fn, controller?)` | コントローラーの制御下で実行される関数を返す           |
+| `useExecutionState(controller?)`         | コントローラーの実行状態を返す                         |
+| `useExecutionController(id?)`            | `ExecutionScope` で共有されているコントローラーを返す  |
+| `useLocalExecutionController(factory)`   | コンポーネント内でのみ使用するコントローラーを作成する |
 
 ### コントローラーの指定
 
@@ -107,57 +140,101 @@ hook の `controller` 引数には、以下のいずれかを指定できます�
 
 コントローラーが見つからない場合もエラーにはならず、制御なしで動作します（テストや Storybook で `ExecutionScope` を用意しなくても使えます）。
 
-### ExecutionScope
-
-子孫のコンポーネントでコントローラーを共有するコンポーネントです。
-
-| プロパティ   | 型                    | 説明                               |
-| ------------ | --------------------- | ---------------------------------- |
-| `controller` | `ExecutionController` | スコープ内で共有するコントローラー |
-
-### useControlledCallback
+### `ExecutionScope`
 
 ```ts
-useControlledCallback(fn, controller?): ControlledFunction
+function ExecutionScope(props: ExecutionScopeProps): JSX.Element;
+```
+
+子孫のコンポーネントでコントローラーを共有するコンポーネントです。\
+入れ子にした場合、hook は最寄りのスコープのコントローラーを使用します。ID を指定した場合は、スコープを遡って ID が一致するコントローラーを使用します。
+
+| プロパティ   | 型                       | 説明                               |
+| ------------ | ------------------------ | ---------------------------------- |
+| `controller` | `AnyExecutionController` | スコープ内で共有するコントローラー |
+| `children?`  | `ReactNode`              | スコープ内に描画する要素           |
+
+### `useControlledCallback`
+
+```ts
+function useControlledCallback<
+  F extends SyncLooseFunction,
+  P extends CancelPolicy = CancelPolicy,
+>(fn: F, controller?: ExecutionControllerTarget<P>): ControlledFunction<F, P>;
 ```
 
 コントローラーの制御下で実行される関数を返します。
 
 - 返す関数の参照は、コントローラーが変わらない限り変わりません。
 - 呼び出し時には常に最新の `fn` が実行されるため、`fn` 内で最新の props や state を参照できます。
-- コントローラーが見つからない場合は、制御せずに `fn` を実行する関数を返します。
+- 呼び出し時の `this` は `fn` に引き継がれます。
+- コントローラーが見つからない場合は、制御せずに `fn` を実行する関数を返します。この場合も戻り値は `Promise` で、`fn` の例外は reject として返ります。
 
-### useExecutionState
+戻り値の型は、コントローラーのインスタンスを指定した場合はその `cancelPolicy` から決まります。未指定・ID の場合は、型の上ではどのコントローラーが使われるか分からないため、解決値に `CANCEL` を含む型になります。`isCanceled` で判定してください。
 
 ```ts
-useExecutionState(controller?): { executing: number; isExecuting: boolean }
+import { isCanceled } from '@fringeworks/execution-controller';
+
+const upload = useControlledCallback(uploadFile, 'upload');
+// ...
+const result = await upload(file);
+if (isCanceled(result)) {
+  return;
+}
 ```
 
-コントローラーの実行状態を返します。実行状態が変わると再レンダリングされます。\
-コントローラーが見つからない場合は、常に `{ executing: 0, isExecuting: false }` を返します。
+| 引数          | 型                             | 説明                                                   |
+| ------------- | ------------------------------ | ------------------------------------------------------ |
+| `fn`          | `F`                            | 対象の関数                                             |
+| `controller?` | `ExecutionControllerTarget<P>` | コントローラーの指定（「コントローラーの指定」を参照） |
 
-### useExecutionController
+### `useExecutionState`
 
 ```ts
-useExecutionController(id?): ExecutionController | undefined
+function useExecutionState(
+  controller?: ExecutionControllerTarget,
+): ExecutionState;
 ```
 
-`ExecutionScope` で共有されているコントローラーを返します。見つからない場合は `undefined` を返します。
+`controller` で指定したコントローラーの実行状態を返します（指定方法は「コントローラーの指定」を参照）。実行状態が変わると再レンダリングされます。\
+状態が変わらない限り、同じオブジェクトを返します。コントローラーが見つからない場合は、常に `{ executing: 0, isExecuting: false }` を返します。
 
-### useLocalExecutionController
+| プロパティ    | 型        | 説明                                                                                        |
+| ------------- | --------- | ------------------------------------------------------------------------------------------- |
+| `executing`   | `number`  | 実行中の関数の件数。`SerialController` の順番待ちなど、実行を待機している呼び出しは含まない |
+| `isExecuting` | `boolean` | 1件以上の関数が実行中か                                                                     |
+
+### `useExecutionController`
 
 ```ts
-useLocalExecutionController(factory): ExecutionController
+function useExecutionController(
+  id?: string,
+): AnyExecutionController | undefined;
+```
+
+`ExecutionScope` で共有されているコントローラーを返します。`id` を省略すると最寄りのスコープのコントローラーを、指定するとスコープを遡って ID が一致するコントローラーを返します。見つからない場合は `undefined` を返します。
+
+### `useLocalExecutionController`
+
+```ts
+function useLocalExecutionController<C extends AnyExecutionController>(
+  factory: () => C,
+): C;
 ```
 
 コンポーネント内でのみ使用するコントローラーを作成します。
 
 - `factory` は初回のレンダリングでのみ呼ばれ、以降は同じインスタンスを返します。
-- アンマウント時に、実行を待機している呼び出し（デバウンス待ちなど）をキャンセルします。
+- アンマウント時に、実行を待機している呼び出し（デバウンス待ちなど）をキャンセルします。既に実行中の関数は中断しません。
 
-> [!WARNING]
-> コントローラーのインスタンスを hook に直接渡す場合、レンダリングのたびに `new` しないでください。インスタンスが作り直されると、連打防止などの状態がリセットされます。\
-> コンポーネント内で作成する場合は `useLocalExecutionController` を使用してください。
+### 型
+
+| 型                             | 説明                                                                       |
+| ------------------------------ | -------------------------------------------------------------------------- |
+| `ExecutionScopeProps`          | `ExecutionScope` のプロパティ                                              |
+| `ExecutionState`               | `useExecutionState` の戻り値                                               |
+| `ExecutionControllerTarget<P>` | hook の `controller` 引数の型。ID の文字列か、コントローラーのインスタンス |
+| `AnyExecutionController`       | 種別・`cancelPolicy` を問わないコントローラーの型                          |
 
 ## ライセンス
 

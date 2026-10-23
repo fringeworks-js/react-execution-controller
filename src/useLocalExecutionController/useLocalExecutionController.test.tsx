@@ -39,4 +39,25 @@ describe('useLocalExecutionController', () => {
     await vi.advanceTimersByTimeAsync(1000);
     expect(fn).not.toHaveBeenCalled();
   });
+
+  it('StrictModeでも、マウント後の呼び出しを実行し、アンマウント時にキャンセルする', async () => {
+    const { result, unmount } = renderHook(
+      () =>
+        useLocalExecutionController(
+          () => new DebounceController({ id: 'test', cancelPolicy: 'resolve' }),
+        ),
+      { reactStrictMode: true },
+    );
+    const fn = vi.fn(async () => 'ok');
+
+    // StrictModeのエフェクトの再実行でキャンセルされた状態が残らない
+    const first = result.current.wrap(fn)();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(await first).toBe('ok');
+
+    const second = result.current.wrap(fn)();
+    unmount();
+    expect(await second).toBe(CANCEL);
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
 });

@@ -1,3 +1,4 @@
-'use client';
-
-export { default } from './useControlledCallback';
+export {
+  default,
+  default as useControlledCallback,
+} from './useControlledCallback';

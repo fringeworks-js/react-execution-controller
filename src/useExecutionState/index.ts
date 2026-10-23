@@ -1,4 +1,2 @@
-'use client';
-
 export type * from './types';
-export { default } from './useExecutionState';
+export { default, default as useExecutionState } from './useExecutionState';
