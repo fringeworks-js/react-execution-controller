@@ -5,7 +5,7 @@ import type {
   ControlledFunction,
 } from '@fringeworks/execution-controller';
 import useLatestRef from '@fringeworks/react-utils/hooks/useLatestRef';
-import type { SyncLooseFunction } from '@fringeworks/types';
+import type { LooseSyncFunction } from '@fringeworks/types';
 import { useMemo } from 'react';
 import useTargetController from '../_internal/_useTargetController';
 import type { ExecutionControllerTarget } from '../types';
@@ -25,7 +25,7 @@ import type { ExecutionControllerTarget } from '../types';
  * @returns 制御された関数
  */
 export default function useControlledCallback<
-  F extends SyncLooseFunction,
+  F extends LooseSyncFunction,
   P extends CancelPolicy = CancelPolicy,
 >(fn: F, controller?: ExecutionControllerTarget<P>): ControlledFunction<F, P> {
   const target = useTargetController(controller);

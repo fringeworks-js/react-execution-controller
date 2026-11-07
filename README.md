@@ -158,7 +158,7 @@ When nested, hooks use the controller of the nearest scope. With an ID, they wal
 
 ```ts
 function useControlledCallback<
-  F extends SyncLooseFunction,
+  F extends LooseSyncFunction,
   P extends CancelPolicy = CancelPolicy,
 >(fn: F, controller?: ExecutionControllerTarget<P>): ControlledFunction<F, P>;
 ```

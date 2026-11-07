@@ -158,7 +158,7 @@ function ExecutionScope(props: ExecutionScopeProps): JSX.Element;
 
 ```ts
 function useControlledCallback<
-  F extends SyncLooseFunction,
+  F extends LooseSyncFunction,
   P extends CancelPolicy = CancelPolicy,
 >(fn: F, controller?: ExecutionControllerTarget<P>): ControlledFunction<F, P>;
 ```

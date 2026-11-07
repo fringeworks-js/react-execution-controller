@@ -1,6 +1,6 @@
 {
   "name": "@fringeworks/react-execution-controller",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "private": true,
   "description": "A library some will find handy, for sharing @fringeworks/execution-controller across React components.",
   "keywords": [
@@ -32,12 +32,12 @@
     "tidy": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json}\" --config ./prettier.tidy.config.ts"
   },
   "dependencies": {
-    "@fringeworks/react-utils": "^0.9.1",
-    "@fringeworks/types": "^0.9.2"
+    "@fringeworks/react-utils": "^0.12.2",
+    "@fringeworks/types": "^1.1.1"
   },
   "devDependencies": {
-    "@fringeworks/dev": "^0.13.1",
-    "@fringeworks/execution-controller": "^0.9.0",
+    "@fringeworks/dev": "^0.13.3",
+    "@fringeworks/execution-controller": "^0.9.1",
     "@testing-library/react": "^16.3.3",
     "@types/node": "^25.9.9",
     "@types/react": "^19.0.0",
@@ -54,7 +54,7 @@
     "vitest": "^4.1.11"
   },
   "peerDependencies": {
-    "@fringeworks/execution-controller": "^0.9.0",
+    "@fringeworks/execution-controller": "^0.9.1",
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0"
   },
